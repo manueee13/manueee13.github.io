@@ -177,7 +177,6 @@ Since every page that wasn’t found redirected to a custom 404 page, I added a 
 ```
 /status               (Status: 404) [Size: 2444]
 ```
-andando al path `/status` restituisce una pagina bianca.
 
 Going to the `/status` path returns a blank page.
 
