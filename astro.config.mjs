@@ -10,7 +10,7 @@ export default defineConfig({
         allow: ['..']
       }
     }
-  }
+  },
   site: 'https://manueee13.github.io',
   base: '/',
   output: 'static',
