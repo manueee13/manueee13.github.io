@@ -11,4 +11,10 @@ export default defineConfig({
       }
     }
   }
+  site: 'https://manueee13.github.io',
+  base: '/',
+  output: 'static',
+  build: {
+    assets: 'assets'
+  }
 });
