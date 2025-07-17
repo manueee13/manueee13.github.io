@@ -1,0 +1,448 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { getCollection } from "astro:content";
+
+const ctfPosts = await getCollection("ctf");
+const htbPosts = await getCollection("htb");
+
+// Group CTF by year and organizer
+const ctfByYear = ctfPosts.reduce((acc: Record<string, Record<string, Record<string, any[]>>>, post: any) => {
+    const year = post.data.date.getFullYear().toString();
+    if (!acc[year]) acc[year] = {};
+    
+    // Extract organizer from category field or path
+    const organizer = post.data.organizer || post.slug.split('/')[0] || 'other';
+    if (!acc[year][organizer]) acc[year][organizer] = {};
+    
+    // Categorize by challenge type
+    const category = post.data.category || 'misc';
+    if (!acc[year][organizer][category]) acc[year][organizer][category] = [];
+    acc[year][organizer][category].push(post);
+    
+    return acc;
+}, {});
+
+// Group HTB by type
+const htbByType = htbPosts.reduce((acc: Record<string, any[]>, post: any) => {
+    const type = post.data.category || 'other'; // season7, machines, challenges, sherlocks, etc.
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(post);
+    return acc;
+}, {});
+
+// Sort by date (most recent first)
+Object.keys(ctfByYear).forEach((year: string) => {
+    Object.keys(ctfByYear[year]).forEach((organizer: string) => {
+        Object.keys(ctfByYear[year][organizer]).forEach((category: string) => {
+            ctfByYear[year][organizer][category].sort((a: any, b: any) => 
+                new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+            );
+        });
+    });
+});
+
+Object.keys(htbByType).forEach((type: string) => {
+    htbByType[type].sort((a: any, b: any) => 
+        new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+    );
+});
+---
+
+<BaseLayout title="Writeups - manueee13">
+    <Header />
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>Writeups Collection</h1>
+                <p>organized chaos of solved challenges</p>
+            </section>
+
+            <div class="writeups-sections">
+                <!-- Sezione CTF -->
+                <section id="ctf" class="writeup-section">
+                    <h2 class="section-title">CTF Writeups</h2>
+                    
+                    {Object.keys(ctfByYear).length === 0 ? (
+                        <div class="empty-state">
+                            <p>🚧 CTF writeups coming soon! 🚧</p>
+                        </div>
+                    ) : (
+                        <div class="categories-grid">
+                            {Object.entries(ctfByYear).sort(([a], [b]) => b.localeCompare(a)).map(([year, organizers]) => (
+                                <div class="year-card">
+                                    <h3 class="year-title">{year}</h3>
+                                    <div class="organizers-grid">
+                                        {Object.entries(organizers).map(([organizer, categories]) => (
+                                            <div class="organizer-card">
+                                                <h4 class="organizer-title">{organizer}</h4>
+                                                <div class="category-list">
+                                                    {Object.entries(categories).map(([category, posts]) => (
+                                                        <div class="category-group">
+                                                            <h5 class="category-title">
+                                                                {category} <span class="count">({posts.length})</span>
+                                                            </h5>
+                                                            <ul class="writeup-list">
+                                                                {posts.map(post => (
+                                                                    <li>                                                        <a href={`/ctf/${post.slug}`} class="writeup-link">
+                                                            <span class="writeup-title">{post.data.title}</span>
+                                                            <span class="writeup-date">
+                                                                {post.data.date.toLocaleDateString('en-US')}
+                                                            </span>
+                                                        </a>
+                                                                        <div class="writeup-tags">
+                                                                            {post.data.tags?.slice(0, 3).map(tag => (
+                                                                                <span class="tag">{tag}</span>
+                                                                            ))}
+                                                                        </div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </section>
+
+                <!-- Sezione HTB -->
+                <section id="htb" class="writeup-section">
+                    <h2 class="section-title">HackTheBox Writeups</h2>
+                    
+                    {Object.keys(htbByType).length === 0 ? (
+                        <div class="empty-state">
+                            <p>🚧 HTB writeups coming soon! 🚧</p>
+                        </div>
+                    ) : (
+                        <div class="categories-grid">
+                            {Object.entries(htbByType).map(([type, posts]) => (
+                                <div class="category-card">
+                                    <div class="category-header">
+                                        <h3 class="category-title">{type}</h3>
+                                        <span class="count">{posts.length} writeup{posts.length !== 1 ? 's' : ''}</span>
+                                    </div>
+                                    <ul class="writeup-list">
+                                        {posts.map(post => (
+                                            <li>
+                                                <a href={`/htb/${post.slug}`} class="writeup-link">
+                                                    <div class="writeup-info">
+                                                        <span class="writeup-title">{post.data.title}</span>
+                                                        {post.data.machine && (
+                                                            <span class="machine-name">{post.data.machine}</span>
+                                                        )}
+                                                        <span class="difficulty-badge {post.data.difficulty?.toLowerCase()}">
+                                                            {post.data.difficulty}
+                                                        </span>
+                                                    </div>
+                                                    <span class="writeup-date">
+                                                        {post.data.date.toLocaleDateString('en-US')}
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
+        </div>
+    </main>
+    <Footer />
+</BaseLayout>
+
+<style>
+    .writeups-sections {
+        display: flex;
+        flex-direction: column;
+        gap: 5rem;
+        margin-top: 2rem;
+    }
+
+    .writeup-section {
+        position: relative;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 20px var(--glow-pink));
+    }
+
+    .section-description {
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        margin-bottom: 3rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .empty-state {
+        background: var(--bg-card);
+        border: 2px solid var(--border-subtle);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* CTF Organization Styles */
+    .year-card {
+        background: var(--bg-card);
+        border: 2px solid var(--border-subtle);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .year-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+
+    .year-title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-align: center;
+    }
+
+    .organizers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .organizer-card {
+        background: rgba(255, 105, 180, 0.05);
+        border: 1px solid var(--border-subtle);
+        border-radius: 15px;
+        padding: 1.5rem;
+    }
+
+    .organizer-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--accent-pink);
+        text-transform: capitalize;
+    }
+
+    .category-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .category-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        color: var(--accent-cyan);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* HTB Organization Styles */
+    .category-card {
+        background: var(--bg-card);
+        border: 2px solid var(--border-subtle);
+        border-radius: 20px;
+        padding: 2.5rem;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+
+    .category-card:hover {
+        border-color: var(--accent-pink);
+        transform: translateY(-8px);
+        box-shadow: 
+            0 10px 40px rgba(255, 105, 180, 0.3),
+            0 0 0 1px rgba(255, 105, 180, 0.2);
+    }
+
+    .category-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .category-header .category-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-transform: capitalize;
+    }
+
+    /* Writeup List Styles */
+    .writeup-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .writeup-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 1rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .writeup-link:hover {
+        background: rgba(255, 105, 180, 0.1);
+        border-color: var(--accent-pink);
+        color: var(--text-primary);
+        transform: translateX(8px);
+    }
+
+    .writeup-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .writeup-title {
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    .machine-name {
+        font-size: 0.9rem;
+        color: var(--accent-purple);
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .writeup-date {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 400;
+    }
+
+    .writeup-tags {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .count {
+        background: var(--gradient-primary);
+        color: var(--bg-primary);
+        padding: 0.2rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+    }
+
+    .difficulty-badge {
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .difficulty-badge.easy {
+        background: rgba(0, 255, 255, 0.2);
+        color: var(--accent-cyan);
+        border: 1px solid var(--accent-cyan);
+    }
+
+    .difficulty-badge.medium {
+        background: rgba(255, 165, 0, 0.2);
+        color: #ffa500;
+        border: 1px solid #ffa500;
+    }
+
+    .difficulty-badge.hard {
+        background: rgba(255, 107, 107, 0.2);
+        color: #ff6b6b;
+        border: 1px solid #ff6b6b;
+    }
+
+    .difficulty-badge.insane {
+        background: rgba(255, 20, 147, 0.2);
+        color: var(--accent-magenta);
+        border: 1px solid var(--accent-magenta);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .organizers-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .writeup-link {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .writeup-info {
+            width: 100%;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>

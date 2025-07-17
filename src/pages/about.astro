@@ -1,0 +1,207 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout title="About Me - manueee13">
+    <Header />
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>About Me</h1>
+                <p>cybersecurity enthusiast & CTF player</p>
+            </section>
+
+            <div class="about-content">
+                <div class="about-section">
+                    <h2>> whoami</h2>
+                    <p>
+                        Hi! I'm manueee13, a cybersecurity enthusiast who loves solving CTFs and analyzing vulnerabilities. 
+                        This blog is where I share my writeups and adventures in the world of information security.
+                    </p>
+                    <p>
+                        When I'm not hacking some challenge, I'm probably drinking coffee and thinking about new ways 
+                        to improve my pentesting methodology (or watching anime, but that's a secret 🤫).
+                    </p>
+                    <p>
+                        <!-- PLACEHOLDER: Add your personal story, background, how you got into cybersecurity, 
+                             what drives your passion, any notable achievements, etc. -->
+                        
+                    </p>
+                </div>
+
+                <div class="about-section">
+                    <h2>My Team</h2>
+                    <p>
+                        I'm part of the <strong>MNTCRL</strong> team.
+                        You can find more about us on our website:
+                    </p>
+                    <div class="team-link">
+                        <a href="https://mntcrl.it" target="_blank" class="team-button">
+                            🎲 Visit MNTCRL.it
+                        </a>
+                    </div>
+                    <p>
+                        <!-- PLACEHOLDER: Describe your role in the team, how you joined, team achievements, 
+                             favorite team moments, what you've learned from teamwork, etc. -->
+                        
+                    </p>
+                </div>
+
+                <div class="about-section">
+                    <h2>Skills & Specializations</h2>
+                    <div class="skills-grid">
+                        <div class="skill-tag">Web Security</div>
+                        <div class="skill-tag">Binary Exploitation</div>
+                        <div class="skill-tag">Reverse Engineering</div>
+                        <div class="skill-tag">OSINT</div>
+                        <!-- PLACEHOLDER: Add/remove skills based on your actual expertise -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <Footer />
+</BaseLayout>
+
+<style>
+    .team-link {
+        margin: 2rem 0;
+        text-align: center;
+    }
+
+    .team-button {
+        display: inline-block;
+        background: var(--gradient-primary);
+        color: var(--bg-primary);
+        text-decoration: none;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px var(--glow-pink);
+    }
+
+    .team-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px var(--glow-pink);
+    }
+
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .tool-category {
+        background: rgba(255, 105, 180, 0.05);
+        border: 1px solid var(--border-subtle);
+        border-radius: 15px;
+        padding: 1.5rem;
+    }
+
+    .tool-category h3 {
+        color: var(--accent-cyan);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .tool-category ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .tool-category li {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        padding: 0.3rem 0;
+    }
+
+    .contact-links {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .contact-link {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 1rem 1.5rem;
+        border: 2px solid var(--border-subtle);
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .contact-link:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent-pink);
+        background: rgba(255, 105, 180, 0.1);
+        color: var(--accent-pink);
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.3);
+    }
+
+    .contact-link.github:hover {
+        border-color: var(--accent-purple);
+        background: rgba(218, 112, 214, 0.1);
+        color: var(--accent-purple);
+        box-shadow: 0 5px 20px rgba(218, 112, 214, 0.3);
+    }
+
+    .contact-link.team:hover {
+        border-color: var(--accent-cyan);
+        background: rgba(0, 255, 255, 0.1);
+        color: var(--accent-cyan);
+        box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .icon {
+        font-size: 1.2rem;
+    }
+
+    .fun-facts {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .fun-facts li {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        padding: 0.8rem 1.2rem;
+        background: rgba(0, 255, 255, 0.05);
+        border-left: 3px solid var(--accent-cyan);
+        border-radius: 0 10px 10px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .tools-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .contact-links {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .contact-link {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+    }
+</style>

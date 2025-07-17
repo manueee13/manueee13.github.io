@@ -1,0 +1,464 @@
+---
+const { frontmatter } = Astro.props;
+import BaseLayout from "./BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+// Funzione per gestire il path delle immagini
+const getImagePath = (imagePath: string, slug: string) => {
+    if (!imagePath) return '/images/default-ctf.png';
+    if (imagePath.startsWith('./')) {
+        // Per le immagini relative, costruisci il percorso corretto
+        return `/src/content/ctf/${slug}/img/${imagePath.substring(6)}`;
+    }
+    if (imagePath.startsWith('/')) {
+        return imagePath; // Path assoluto
+    }
+    return `/src/content/ctf/${slug}/${imagePath}`;
+};
+
+const imagePath = getImagePath(frontmatter.image, frontmatter.slug || '');
+
+// Funzione per formattare la data
+const formatDate = (date: Date) => {
+    return date.toLocaleDateString('it-IT', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+};
+---
+
+<BaseLayout title={`${frontmatter.title} - CTF Writeup`}>
+    <Header />
+    
+    <main>
+        <div class="container">
+            <!-- Hero section del writeup -->
+            <section class="writeup-hero">
+                <div class="breadcrumb">
+                    <a href="/">home</a>
+                    <span>→</span>
+                    <a href="/writeups">writeups</a>
+                    <span>→</span>
+                    <a href="/writeups#ctf">ctf</a>
+                    <span>→</span>
+                    {frontmatter.organizer && (
+                        <>
+                            <a href={`/writeups#ctf`}>{frontmatter.organizer}</a>
+                            <span>→</span>
+                        </>
+                    )}
+                    <span class="current">{frontmatter.title}</span>
+                </div>
+                
+                <div class="writeup-header">
+                    <div class="writeup-info">
+                        <h1 class="writeup-title">{frontmatter.title}</h1>
+                        <div class="writeup-meta">
+                            {frontmatter.organizer && (
+                                <span class="meta-item">
+                                    <span class="meta-label">organizer:</span>
+                                    <span class="meta-value">{frontmatter.organizer}</span>
+                                </span>
+                            )}
+                            <span class="meta-item">
+                                <span class="meta-label">category:</span>
+                                <span class="meta-value">{frontmatter.category}</span>
+                            </span>
+                            {frontmatter.difficulty && (
+                                <span class="meta-item">
+                                    <span class="meta-label">difficulty:</span>
+                                    <span class={`meta-value difficulty-${frontmatter.difficulty.toLowerCase()}`}>
+                                        {frontmatter.difficulty}
+                                    </span>
+                                </span>
+                            )}
+                            <span class="meta-item">
+                                <span class="meta-label">date:</span>
+                                <span class="meta-value">{formatDate(frontmatter.date)}</span>
+                            </span>
+                        </div>
+                        
+                        {frontmatter.description && (
+                            <p class="writeup-description">{frontmatter.description}</p>
+                        )}
+                        
+                        <div class="writeup-tags">
+                            {frontmatter.tags && frontmatter.tags.map((tag: string) => (
+                                <span class="tag">{tag}</span>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {frontmatter.image && (
+                        <div class="writeup-image">
+                            <img src={imagePath} alt={`${frontmatter.title} icon`} />
+                        </div>
+                    )}
+                </div>
+            </section>
+            
+            <!-- Contenuto del markdown -->
+            <article class="writeup-content">
+                <slot />
+            </article>
+            
+            <!-- Navigation tra writeups -->
+            <nav class="writeup-navigation">
+                <a href="/writeups#ctf" class="nav-button back">
+                    ← back to ctf writeups
+                </a>
+            </nav>
+        </div>
+    </main>
+    
+    <Footer />
+</BaseLayout>
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+    
+    .breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .breadcrumb a:hover {
+        color: var(--accent-pink);
+    }
+    
+    .breadcrumb .current {
+        color: var(--accent-cyan);
+        font-weight: 600;
+    }
+    
+    /* Hero section */
+    .writeup-hero {
+        margin-bottom: 4rem;
+    }
+    
+    .writeup-header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 3rem;
+        align-items: start;
+        background: var(--bg-card);
+        border: 2px solid var(--border-subtle);
+        border-radius: 20px;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .writeup-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+    
+    .writeup-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 20px var(--glow-pink));
+        line-height: 1.2;
+    }
+    
+    .writeup-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .meta-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+    
+    .meta-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+    }
+    
+    .difficulty-easy { color: var(--accent-cyan); }
+    .difficulty-medium { color: #ffa500; }
+    .difficulty-hard { color: #ff6b6b; }
+    .difficulty-insane { color: var(--accent-magenta); }
+    
+    .writeup-description {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: rgba(0, 255, 255, 0.05);
+        border-left: 4px solid var(--accent-cyan);
+        border-radius: 0 10px 10px 0;
+        font-style: italic;
+        line-height: 1.6;
+    }
+    
+    .writeup-tags {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .tag {
+        background: rgba(218, 112, 214, 0.2);
+        color: var(--accent-purple);
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid var(--accent-purple);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .tag:hover {
+        background: var(--accent-purple);
+        color: var(--bg-primary);
+        box-shadow: 0 0 15px rgba(218, 112, 214, 0.5);
+    }
+    
+    .writeup-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 150px;
+    }
+    
+    .writeup-image img {
+        width: 120px;
+        height: 120px;
+        object-fit: contain;
+        border-radius: 20px;
+        border: 2px solid var(--accent-cyan);
+        padding: 1rem;
+        background: rgba(0, 255, 255, 0.1);
+        box-shadow: 0 0 30px var(--glow-cyan);
+    }
+    
+    /* Contenuto del writeup */
+    .writeup-content {
+        background: var(--bg-card);
+        border: 2px solid var(--border-subtle);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 3rem;
+        line-height: 1.8;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .writeup-content::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient-primary);
+    }
+    
+    /* Stili per il contenuto markdown */
+    .writeup-content :global(h1),
+    .writeup-content :global(h2),
+    .writeup-content :global(h3),
+    .writeup-content :global(h4) {
+        color: var(--text-primary);
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+    }
+    
+    .writeup-content :global(h1) {
+        font-size: 2.2rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .writeup-content :global(h2) {
+        font-size: 1.8rem;
+        color: var(--accent-cyan);
+        border-bottom: 2px solid var(--accent-cyan);
+        padding-bottom: 0.5rem;
+    }
+    
+    .writeup-content :global(h3) {
+        font-size: 1.4rem;
+        color: var(--accent-purple);
+    }
+    
+    .writeup-content :global(p) {
+        color: var(--text-secondary);
+        margin: 1.5rem 0;
+        font-size: 1.05rem;
+    }
+    
+    .writeup-content :global(code) {
+        background: rgba(0, 255, 255, 0.1);
+        color: var(--accent-cyan);
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9em;
+        border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+    
+    .writeup-content :global(pre) {
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-subtle);
+        border-radius: 15px;
+        padding: 1.5rem;
+        overflow-x: auto;
+        margin: 2rem 0;
+        position: relative;
+    }
+    
+    .writeup-content :global(pre code) {
+        background: none;
+        border: none;
+        padding: 0;
+        color: var(--text-primary);
+    }
+    
+    .writeup-content :global(blockquote) {
+        border-left: 4px solid var(--accent-cyan);
+        background: rgba(0, 255, 255, 0.1);
+        padding: 1rem 1.5rem;
+        margin: 2rem 0;
+        border-radius: 0 15px 15px 0;
+        font-style: italic;
+        color: var(--text-secondary);
+    }
+    
+    .writeup-content :global(img) {
+        max-width: 100%;
+        height: auto;
+        border-radius: 15px;
+        border: 2px solid var(--border-subtle);
+        margin: 2rem 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .writeup-content :global(ul),
+    .writeup-content :global(ol) {
+        margin: 1.5rem 0;
+        padding-left: 2rem;
+        color: var(--text-secondary);
+    }
+    
+    .writeup-content :global(li) {
+        margin: 0.5rem 0;
+        line-height: 1.6;
+    }
+    
+    .writeup-content :global(a) {
+        color: var(--accent-cyan);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--accent-cyan);
+        transition: all 0.3s ease;
+    }
+    
+    .writeup-content :global(a:hover) {
+        color: var(--accent-pink);
+        border-bottom-color: var(--accent-pink);
+        text-shadow: 0 0 10px var(--glow-pink);
+    }
+    
+    /* Navigation */
+    .writeup-navigation {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 3rem 0;
+    }
+    
+    .nav-button {
+        color: var(--accent-cyan);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        transition: all 0.3s ease;
+        padding: 1rem 2rem;
+        border: 2px solid var(--accent-cyan);
+        border-radius: 25px;
+        background: rgba(0, 255, 255, 0.1);
+    }
+    
+    .nav-button:hover {
+        background: var(--accent-cyan);
+        color: var(--bg-primary);
+        box-shadow: 0 0 20px var(--glow-cyan);
+        transform: translateY(-2px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 1rem;
+        }
+        
+        .writeup-header {
+            grid-template-columns: 1fr;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .writeup-title {
+            font-size: 2rem;
+        }
+        
+        .writeup-meta {
+            grid-template-columns: 1fr;
+        }
+        
+        .writeup-content {
+            padding: 2rem;
+        }
+        
+        .breadcrumb {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+    }
+</style>

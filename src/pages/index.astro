@@ -1,16 +1,251 @@
 ---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { getCollection } from "astro:content";
 
+const ctfPosts = await getCollection("ctf");
+const htbPosts = await getCollection("htb");
+
+// Get recent posts (last 4)
+const allPosts = [...ctfPosts, ...htbPosts].sort((a, b) => 
+    new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+).slice(0, 4);
+
+// Check if post is HTB type
+const isHTBPost = (post: any) => post.collection === 'htb';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="manueee13 - CTF Writeups & Security Blog">
+    <Header />
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>CTF Writeups</h1>
+                <p>security challenges & elegant solutions</p>
+            </section>
+
+            <div class="blog-grid">
+                <div class="posts-container">
+                    {allPosts.length === 0 ? (
+                        <article class="post-card">
+                            <div class="post-header">
+                                <span class="post-category">info</span>
+                                <span class="post-date">2025-07-16</span>
+                            </div>
+                            <h2 class="post-title">
+                                <a href="/writeups">Work in Progress</a>
+                            </h2>
+                            <p class="post-excerpt">
+                                Still uploading all my writeups! Meanwhile you can check out the CTF and HackTheBox sections to see what I've published so far ✨
+                            </p>
+                            <div class="post-footer">
+                                <a href="/writeups" class="read-more">browse writeups</a>
+                                <div class="post-tags">
+                                    <span class="tag">wip</span>
+                                    <span class="tag">blog</span>
+                                </div>
+                            </div>
+                        </article>
+                    ) : (
+                        allPosts.map(post => (
+                            <article class="post-card">
+                                <div class="post-header">
+                                    <span class="post-category">{post.data.category}</span>
+                                    <span class="post-date">{post.data.date.toLocaleDateString('en-US')}</span>
+                                </div>
+                                <h2 class="post-title">
+                                    <a href={`/${post.collection}/${post.slug}`}>{post.data.title}</a>
+                                </h2>
+                                <div class="post-meta">
+                                    {post.data.difficulty && (
+                                        <span class={`difficulty-badge ${post.data.difficulty.toLowerCase()}`}>
+                                            {post.data.difficulty}
+                                        </span>
+                                    )}
+                                    {isHTBPost(post) && (post.data as any).machine && (
+                                        <span class="machine-badge">{(post.data as any).machine}</span>
+                                    )}
+                                    {!isHTBPost(post) && (post.data as any).organizer && (
+                                        <span class="organizer-badge">{(post.data as any).organizer}</span>
+                                    )}
+                                </div>
+                                <p class="post-excerpt">
+                                    {post.data.description || "Another interesting challenge solved! Click to see the complete solution."}
+                                </p>
+                                <div class="post-footer">
+                                    <a href={`/${post.collection}/${post.slug}`} class="read-more">read more</a>
+                                    <div class="post-tags">
+                                        {post.data.tags.slice(0, 3).map(tag => (
+                                            <span class="tag">{tag}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </article>
+                        ))
+                    )}
+                </div>
+
+                <aside class="sidebar">
+                    <div class="widget">
+                        <h3>categories</h3>
+                        <ul>
+                            <li><a href="/writeups#ctf">CTF <span class="count">{ctfPosts.length}</span></a></li>
+                            <li><a href="/writeups#htb">HackTheBox <span class="count">{htbPosts.length}</span></a></li>
+                        </ul>
+                    </div>
+
+                    <div class="widget">
+                        <h3>quick links</h3>
+                        <ul>
+                            <li><a href="/writeups">all writeups</a></li>
+                            <li><a href="/about">about me</a></li>
+                            <li><a href="https://mntcrl.it" target="_blank">my team</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="widget">
+                        <h3>favorite tools</h3>
+                        <ul>
+                            <li><a href="#">ghidra</a></li>
+                            <li><a href="#">burp suite</a></li>
+                            <li><a href="#">volatility</a></li>
+                            <li><a href="#">radare2</a></li>
+                            <li><a href="#">wireshark</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+    <Footer />
+</BaseLayout>
+
+<style>
+    /* Section title personalizzato */
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 15px var(--glow-pink));
+        text-align: center;
+    }
+
+    /* Meta informazioni aggiuntive */
+    .post-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .difficulty-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .difficulty-badge.easy {
+        background: rgba(0, 255, 255, 0.2);
+        color: var(--accent-cyan);
+        border: 1px solid var(--accent-cyan);
+    }
+
+    .difficulty-badge.medium {
+        background: rgba(255, 165, 0, 0.2);
+        color: #ffa500;
+        border: 1px solid #ffa500;
+    }
+
+    .difficulty-badge.hard {
+        background: rgba(255, 107, 107, 0.2);
+        color: #ff6b6b;
+        border: 1px solid #ff6b6b;
+    }
+
+    .difficulty-badge.insane {
+        background: rgba(255, 20, 147, 0.2);
+        color: var(--accent-magenta);
+        border: 1px solid var(--accent-magenta);
+    }
+
+    .machine-badge,
+    .category-badge {
+        background: rgba(218, 112, 214, 0.15);
+        color: var(--accent-purple);
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid rgba(218, 112, 214, 0.3);
+    }
+
+    /* Stili per le categorie di post */
+    .post-category.ctf {
+        background: linear-gradient(135deg, #ff69b4, #da70d6);
+    }
+
+    .post-category.htb {
+        background: linear-gradient(135deg, #00ffff, #ff69b4);
+    }
+
+    /* View all section */
+    .view-all-section {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-subtle);
+    }
+
+    .view-all-button {
+        color: var(--accent-cyan);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        transition: all 0.3s ease;
+        padding: 1rem 2rem;
+        border: 2px solid var(--accent-cyan);
+        border-radius: 25px;
+        background: rgba(0, 255, 255, 0.1);
+        font-size: 1.1rem;
+    }
+
+    .view-all-button:hover {
+        background: var(--accent-cyan);
+        color: var(--bg-primary);
+        box-shadow: 0 0 20px var(--glow-cyan);
+        transform: translateY(-2px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 1.5rem;
+        }
+        
+        .post-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .difficulty-badge,
+        .machine-badge,
+        .category-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+        }
+    }
+</style>

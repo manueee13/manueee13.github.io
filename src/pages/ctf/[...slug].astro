@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import CTFWriteupLayout from '../../layouts/CTFWriteupLayout.astro';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+    const ctfPosts = await getCollection('ctf');
+    return ctfPosts.map((post) => ({
+        params: { slug: post.slug },
+        props: { post },
+    }));
+}
+
+type Props = {
+    post: CollectionEntry<'ctf'>;
+};
+
+const { post } = Astro.props as Props;
+const { Content } = await post.render();
+---
+
+<CTFWriteupLayout frontmatter={post.data}>
+    <Content />
+</CTFWriteupLayout>
