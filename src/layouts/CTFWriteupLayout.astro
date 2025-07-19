@@ -4,24 +4,30 @@ import BaseLayout from "./BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
-// Funzione per gestire il path delle immagini
+// Funzione per gestire il path delle immagini per GitHub Pages
 const getImagePath = (imagePath: string, slug: string) => {
-    if (!imagePath) return '/images/default-ctf.png';
+    if (!imagePath) return '/favicon.svg'; // fallback
+    
+    // Se l'immagine inizia con ./ è relativa alla cartella del writeup
     if (imagePath.startsWith('./')) {
-        // Per le immagini relative, costruisci il percorso corretto
-        return `/src/content/ctf/${slug}/img/${imagePath.substring(6)}`;
+        const cleanPath = imagePath.substring(2); // rimuovi ./
+        return `/${cleanPath}`; // path assoluto dal root
     }
+    
+    // Se inizia con / è già un path assoluto
     if (imagePath.startsWith('/')) {
-        return imagePath; // Path assoluto
+        return imagePath;
     }
-    return `/src/content/ctf/${slug}/${imagePath}`;
+    
+    // Altrimenti costruisci il path per la cartella del writeup
+    return `/${imagePath}`;
 };
 
 const imagePath = getImagePath(frontmatter.image, frontmatter.slug || '');
 
-// Funzione per formattare la data
+// Funzione per formattare la data in inglese
 const formatDate = (date: Date) => {
-    return date.toLocaleDateString('it-IT', {
+    return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
