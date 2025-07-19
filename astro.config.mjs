@@ -12,7 +12,7 @@ export default defineConfig({
     }
   },
   site: 'https://manueee13.github.io',
-  base: '/',
+  base: '/manueee13.github.io/',
   output: 'static',
   build: {
     assets: 'assets'
