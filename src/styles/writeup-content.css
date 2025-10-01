@@ -1,0 +1,262 @@
+/* Writeup Content Styles for Markdown */
+
+.writeup-content {
+    background: var(--bg-card);
+    border: 2px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 3rem;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+    position: relative;
+    overflow: hidden;
+}
+
+.writeup-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+}
+
+/* Headings */
+.writeup-content :global(h1),
+.writeup-content :global(h2),
+.writeup-content :global(h3),
+.writeup-content :global(h4),
+.writeup-content :global(h5),
+.writeup-content :global(h6) {
+    color: var(--text-primary);
+    margin: 2rem 0 1rem 0;
+    font-weight: 600;
+}
+
+.writeup-content :global(h1) {
+    font-size: 2.2rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.writeup-content :global(h2) {
+    font-size: 1.8rem;
+    color: var(--accent-cyan);
+    border-bottom: 2px solid var(--accent-cyan);
+    padding-bottom: 0.5rem;
+}
+
+.writeup-content :global(h3) {
+    font-size: 1.4rem;
+    color: var(--accent-purple);
+}
+
+.writeup-content :global(h4) {
+    font-size: 1.2rem;
+    color: var(--accent-pink);
+}
+
+/* Paragraphs and Text */
+.writeup-content :global(p) {
+    color: var(--text-secondary);
+    margin: 1.5rem 0;
+    font-size: 1.05rem;
+}
+
+.writeup-content :global(strong) {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.writeup-content :global(em) {
+    color: var(--accent-cyan);
+    font-style: italic;
+}
+
+/* Code Styling */
+.writeup-content :global(code) {
+    background: rgba(0, 255, 255, 0.1);
+    color: var(--accent-cyan);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.writeup-content :global(pre) {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-subtle);
+    border-radius: 15px;
+    padding: 1.5rem;
+    overflow-x: auto;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.writeup-content :global(pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-primary);
+}
+
+/* Add a subtle title to code blocks */
+.writeup-content :global(pre)::before {
+    content: '$ terminal';
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    opacity: 0.6;
+}
+
+/* Blockquotes */
+.writeup-content :global(blockquote) {
+    border-left: 4px solid var(--accent-cyan);
+    background: rgba(0, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 15px 15px 0;
+    font-style: italic;
+    color: var(--text-secondary);
+    position: relative;
+}
+
+.writeup-content :global(blockquote)::before {
+    content: '"';
+    font-size: 4rem;
+    color: var(--accent-cyan);
+    position: absolute;
+    top: -0.5rem;
+    left: 0.5rem;
+    opacity: 0.3;
+    font-family: serif;
+}
+
+/* Images */
+.writeup-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    border: 2px solid var(--border-subtle);
+    margin: 2rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.writeup-content :global(img:hover) {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    border-color: var(--accent-cyan);
+}
+
+/* Lists */
+.writeup-content :global(ul),
+.writeup-content :global(ol) {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+    color: var(--text-secondary);
+}
+
+.writeup-content :global(li) {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+}
+
+.writeup-content :global(ul) > :global(li)::marker {
+    color: var(--accent-pink);
+}
+
+.writeup-content :global(ol) > :global(li)::marker {
+    color: var(--accent-cyan);
+    font-weight: bold;
+}
+
+/* Links */
+.writeup-content :global(a) {
+    color: var(--accent-cyan);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent-cyan);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.writeup-content :global(a:hover) {
+    color: var(--accent-pink);
+    border-bottom-color: var(--accent-pink);
+    text-shadow: 0 0 10px var(--glow-pink);
+}
+
+/* Tables */
+.writeup-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.writeup-content :global(th),
+.writeup-content :global(td) {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.writeup-content :global(th) {
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.writeup-content :global(tr:hover) {
+    background: rgba(255, 0, 110, 0.05);
+}
+
+/* Horizontal Rule */
+.writeup-content :global(hr) {
+    border: none;
+    height: 2px;
+    background: var(--gradient-primary);
+    margin: 3rem 0;
+    border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .writeup-content {
+        padding: 2rem;
+    }
+    
+    .writeup-content :global(h1) {
+        font-size: 1.8rem;
+    }
+    
+    .writeup-content :global(h2) {
+        font-size: 1.5rem;
+    }
+    
+    .writeup-content :global(h3) {
+        font-size: 1.3rem;
+    }
+    
+    .writeup-content :global(pre) {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .writeup-content :global(table) {
+        font-size: 0.9rem;
+    }
+    
+    .writeup-content :global(th),
+    .writeup-content :global(td) {
+        padding: 0.5rem;
+    }
+}

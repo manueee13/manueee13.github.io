@@ -1,15 +1,180 @@
-<header>
+---
+---
+
+<header id="main-header">
   <div class="container">
     <div class="header-content">
-      <a href="/" class="logo">manueee13 - welcome (˶˃ ᵕ ˂˶) .ᐟ.</a>
+      <a href="/" class="logo">manueee13</a>
       <nav>
         <ul>
-          <li><a href="/">home</a></li>
-          <li><a href="/writeups">writeups</a></li>
-          <li><a href="/about">about</a></li>
-          <li><a href="https://mntcrl.it">My Team!</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/writeups">Writeups</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="https://mntcrl.it" target="_blank"><img src="https://www.mntcrl.it/assets/images/logo.png" height="20px" style="filter:invert()"> My Team</a></li>
         </ul>
       </nav>
     </div>
   </div>
 </header>
+
+<script>
+    // Gestione header che scompare/riappare durante lo scroll
+    let lastScrollTop = 0;
+    let ticking = false;
+    const header = document.getElementById('main-header') as HTMLElement;
+    
+    function updateHeader() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > 100) {
+            if (scrollTop > lastScrollTop + 5) {
+                // Scrolling down - hide header
+                header.style.transform = 'translateY(-100%)';
+                header.classList.remove('header-visible');
+            } else if (scrollTop < lastScrollTop - 5) {
+                // Scrolling up - show header
+                header.style.transform = 'translateY(0)';
+                header.classList.add('header-visible');
+            }
+        } else {
+            // At top of page
+            header.style.transform = 'translateY(0)';
+            header.classList.remove('header-visible');
+        }
+        
+        lastScrollTop = scrollTop;
+        ticking = false;
+    }
+    
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateHeader);
+            ticking = true;
+        }
+    }
+    
+    window.addEventListener('scroll', requestTick);
+</script>
+
+<style>
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: rgba(26, 26, 26, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 0, 110, 0.2);
+        padding: 1rem 0;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    header.header-visible {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff006e, #00f5ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-decoration: none;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .logo::before {
+        content: '⚡';
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #ff006e, #00f5ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: logoGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes logoGlow {
+        0% { filter: drop-shadow(0 0 5px rgba(255, 0, 110, 0.5)); }
+        100% { filter: drop-shadow(0 0 15px rgba(0, 245, 255, 0.7)); }
+    }
+    
+    nav ul {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+    }
+    
+    nav a {
+        color: #cccccc;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    nav a:hover {
+        color: #ffffff;
+        background: rgba(255, 0, 110, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    nav a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(135deg, #ff006e, #00f5ff);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(-50%);
+    }
+    
+    nav a:hover::after {
+        width: 80%;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+        
+        nav ul {
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        nav a {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
