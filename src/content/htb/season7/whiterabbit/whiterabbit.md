@@ -1,6 +1,5 @@
 ---
 title: WhiteRabbit
-image: "/htb/season7/whiterabbit/img/icon.png"
 date: 2025-04-12
 category: season7
 difficulty: Insane
@@ -33,11 +32,11 @@ The interesting thing is the second SSH service on port 2222.
 I check the website hosted on port 80.
 http://whiterabbit.htb/
 
-![whiterabbit.htb-fe1](./img/image1.png "whiterabbit.htb-fe1")
+![whiterabbit.htb-fe1](/htb/season7/whiterabbit/img/image1.png "whiterabbit.htb-fe1")
 
 Exploring the site, it looks like a very standard front-end page.
 
-![whiterabbit.htb-fe2](./img/image2.png "whiterabbit.htb-fe2")
+![whiterabbit.htb-fe2](/htb/season7/whiterabbit/img/image2.png "whiterabbit.htb-fe2")
 
 Exploring the site, it looks like a very standard front-end page.
 
@@ -94,7 +93,7 @@ As indicated on the front-end, they use this service to monitor the status of th
 
 The dashboard is only accessible through authentication.
 
-![uk-login](./img/image3.png "uk-login")
+![uk-login](/htb/season7/whiterabbit/img/image3.png "uk-login")
 
 ### Vulnerability Assessment
 
@@ -182,18 +181,18 @@ Going to the `/status` path returns a blank page.
 
 By checking the source code on GitHub ([status-page-router.js](https://github.com/louislam/uptime-kuma/blob/master/server/routers/status-page-router.js)), `/status` is an endpoint, so I run gobuster to see what parameters are available. Among them, there is only `/status/temp`
 
-![uk-dashboard](./img/image4.png "uk-dashboard")
+![uk-dashboard](/htb/season7/whiterabbit/img/image4.png "uk-dashboard")
 
 From here, it’s possible to see 2 new subdomains and a **n8n** service, but its link is missing.
 
 On the subdomain `a668910b5514e.whiterabbit.htb` you can access the **wiki.js** service, while the other subdomain, `http://ddb09a8558c9.whiterabbit.htb/`, is the one for **gophish**.
 
-![wikijs-1](./img/image5.png "wikijs-1")
-![gp-login](./img/image6.png "gp-login")
+![wikijs-1](/htb/season7/whiterabbit/img/image5.png "wikijs-1")
+![gp-login](/htb/season7/whiterabbit/img/image6.png "gp-login")
 
 Starting from **wiki.js**, you can access the `/en/gophish_webhooks` page and see a lot of sensitive information, including a download link to a JSON file containing the **n8n** workflow.
 
-![wikijs-2](./img/image7.png "wikijs-2")
+![wikijs-2](/htb/season7/whiterabbit/img/image7.png "wikijs-2")
 
 ```json
 {
@@ -825,13 +824,13 @@ Starting from **wiki.js**, you can access the `/en/gophish_webhooks` page and se
 
 In short... We have the subdomain `28efa8f7df.whiterabbit.htb`, which is for **n8n**.
 
-![n8n-login](./img/image8.png "n8n-login")
+![n8n-login](/htb/season7/whiterabbit/img/image8.png "n8n-login")
 
 By analyzing the JSON configuration file along with the wiki, we can understand how the workflow operates.
 
 **n8n Workflow:**
 
-![n8n-workflow](./img/image9.png "n8n-workflow")
+![n8n-workflow](/htb/season7/whiterabbit/img/image9.png "n8n-workflow")
 1. **Webhook initialization**
     - **"Webhook" node**
         - Receives POST requests from Gophish at the endpoint `/webhook/d96af3a4-21bd-4bcb-bd34-37bfc67dfd1d`.
@@ -1090,11 +1089,11 @@ b0**********************REDACTED
 
 The next objective is to gain root access. In `/home`, among the users present on the system, we also have `neo`. As seen in the tables, neo's password was generated with a program found at `/opt/neo-password-generator`. We need to analyze it with **Ghidra** and examine the generation algorithm.
 
-![ghidra-1](./img/image10.png "ghidra-1")
+![ghidra-1](/htb/season7/whiterabbit/img/image10.png "ghidra-1")
 
 There is the `gettimeofday()` function which saves, at the address of `local_28`, the value in the format `2024-08-30 14:40:42 UTC+0`. Checking the `generate_password()` function...
 
-![ghidra-2](./img/image11.png "ghidra-2")
+![ghidra-2](/htb/season7/whiterabbit/img/image11.png "ghidra-2")
 
 the timestamp is used as a seed to generate a value and select from alphanumeric characters.
 
