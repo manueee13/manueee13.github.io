@@ -11,25 +11,24 @@ tags:
   - sun2025
   - sunshine
 ---
-Ci viene fornito un file binario `warp` dal peso di 17.6 MB (questo è importante ma vedremo dopo)
+We are provided with a binary file `warp` weighing 17.6 MB (this detail is important, as we’ll see shortly)
 
 ```bash
 $ ./warp               
 Error: MapError(CreateError { name: "rb", code: -1, io_error: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" } })
 
-$ sudo '/mnt/c/Users/etamb/Desktop/CTF/Sunshine 25/rev/warp' 
+$ sudo ./warp
 [sudo] password for kali: 
 This proram is listening...
 ```
 
-Avviandolo per la prima volta, abbiamo notato che il processo ha provato a creare una **BPF map** chiamata `rb` (*ringbuf*).
+When running it for the first time, we noticed that the process tried to create a **BPF map** named `rb` (_ringbuf_).
 
-In breve: **eBPF** (o anche **BPF**) non è altro che un mini-VM nel kernel Linux che permette di caricare piccoli programmi che eseguono in kernel-space.
+In short: **eBPF** (or **BPF**) is essentially a mini-VM inside the Linux kernel that allows loading small programs executed in kernel space (which explains the large file size).
 
-Di per se quindi, il file binario non è un unico file standalone, ma carica "piccoli programmi" nel kernel (ecco dal peso).
+Therefore, the binary file isn’t a single standalone executable — it loads “small programs” into the kernel (hence the size).
 
-Facendolo eseguire con i permessi di root, il programma resta in ascolto.
-Da li iniziamo ad ispezionare le mappe
+Running it with root privileges, the program starts listening. From there, we begin inspecting the maps:
 
 ```bash
 $ sudo bpftool map show
@@ -42,8 +41,8 @@ $ sudo bpftool map show
         key 0B  value 0B  max_entries 4096  memlock 16680B
 ```
 
-Prendiamo in considerazione l'id `15` poiché contiene un blob di dati statici su `.rodata`
-Eseguiamo il dump
+We focus on ID `15` because it contains a static data blob in `.rodata`.
+Let’s dump it:
 
 ```bash
 $ sudo bpftool map dump id 15 > map15.raw
@@ -58,11 +57,11 @@ value:
 Found 1 element
 ```
 
-I primi 4 byte, letti in little-endianess, in ASCII è `W4rp`, successivamente una serie di padding `00` mentre i restanti 30 byte potrebbe trattarsi della flag encodata.
+The first 4 bytes, read in little-endian, form the ASCII string `W4rp`, followed by a series of `00` padding bytes. The remaining 30 bytes likely contain the encoded flag.
 
-Il prossimo passo è capire come viene decodata la flag.
+The next step is to understand how this flag is decoded.
 
-Eseguiamo `binwalk`
+We run `binwalk`:
 
 ```bash
 $ binwalk warp                                                                               
@@ -80,17 +79,19 @@ DECIMAL       HEXADECIMAL     DESCRIPTION
 ...
 ```
 
-Tra gli indirizzi che ci interessa prendiamo `0x1E5000` che è l'entry del programma.
-Estraiamo ora in formato `.o`
+The relevant address here is `0x1E5000`, which marks the program entry point.
+Let’s extract it into a `.o` file:
 
 ```bash
 ┌──(kali㉿kali)-[~/ctf/sunshinectf25/rev]
 └─$ dd if=./warp of=prog_bpf.o bs=1 skip=$((0x1E5000)) count=$((1024*200)) status=none 
-                                                                                                                                         
+
+
 ┌──(kali㉿kali)-[~/ctf/sunshinectf25/rev]
 └─$ file prog_bpf.o 
 prog_bpf.o: ELF 64-bit LSB relocatable, eBPF, version 1 (SYSV), with debug_info, not stripped
-                                                                                                                                         
+
+
 ┌──(kali㉿kali)-[~/ctf/sunshinectf25/rev]
 └─$ readelf -hS prog_bpf.o | sed -n '1,120p'
 ELF Header:
@@ -175,7 +176,7 @@ Section Headers:
        00000000000001b0  0000000000000018           1    15     8
 ```
 
-E generiamo il disassembly del file `.o`
+We then disassemble the `.o` file:
 
 ```bash
 $ llvm-objdump --disassemble --no-show-raw-insn --arch-name=bpf prog_bpf.o > bpf_asm.txt
@@ -483,9 +484,9 @@ Disassembly of section xdp:
      295:       r3 |= r5
 ```
 
-Da qui in poi l'analisi diventa un po' difficile se non si ha dimestichezza, quindi quello che possiamo fare è fornire il disassemblato al vostro LLM di fiducia (nel mio caso ChatGPT) e lui vi dirà come avviene la decodifica e vi genera anche lo script in python se fornite il blob di dati che abbiamo trovato.
+From this point onward, the analysis becomes complex if you’re not familiar with eBPF assembly. So, you can feed the disassembly to your favorite LLM (in my case, ChatGPT), which will explain how the decoding works and even generate a Python script if you provide it with the `.rodata` blob we extracted.
 
-> Nel disassembly della sezione `xdp` abbiamo identificato il punto d’interesse cercando il _magic_ `W4rp` (32-bit little-endian check 0x70723457):
+> In the disassembly of section `xdp`, we identified the point of interest by searching for the magic string `W4rp` (32-bit little-endian check `0x70723457`):
 
 ```
 ...
@@ -494,7 +495,7 @@ Da qui in poi l'analisi diventa un po' difficile se non si ha dimestichezza, qui
 ...
 ```
 
-> Questa condizione seleziona il payload corrispondente e introduce la routine che costruisce il buffer di output. Subito dopo troviamo letture di byte e poi il vero loop di trasformazione (le righe rilevanti sono intorno a `262..277` nel tuo dump):
+> This condition selects the corresponding payload and enters the routine that constructs the output buffer. Immediately after, we find byte reads and then the actual transformation loop (the relevant lines are around `262..277`):
 
 ```
 262:  r3 = r10
@@ -514,23 +515,22 @@ Da qui in poi l'analisi diventa un po' difficile se non si ha dimestichezza, qui
 277:  goto -0x43                 # loop
 ```
 
-> Queste istruzioni sono il decoder: prendono ogni byte del blob, applicano XOR, sign-extend, add, modulo e infine lo mappano in un carattere stampabile, scrivendolo poi nel buffer (nel resto del codice si vede la scrittura `*(u8 *)(r0 + k) = rX`).
-> Ogni riga tradotta in operazione semantica:
-	- `r4 = *(u8 *)(...)` → prendi un singolo byte `b` dall’input blob.
-    - `r4 ^= 0x60` → `x = b ^ 0x60`. 
-	- `r4 <<= 0x38` e `r4 s>>= 0x38` → left shift 56 e arithmetic right shift 56: tecnica BPF per **sign-extend** l’8-bit risultante in un valore con segno (8→64 bit). Equivalentemente: se `x & 0x80` allora `sx = x - 0x100` altrimenti `sx = x`.
-    - `r4 += 0x0e` → `sx = sx + 14`.
-    - `r4 <<= 0x20; r4 >>= 0x20` → normalizza/truncate al range a 32 bit (implementazione interna dovuta a come BPF gestisce risultati intermedi).
-    - `r4 %= 0x5e` → `y = (sx + 0x0E) mod 94`.
-    - `r4 += 0x21` → `ch = y + 33` → garantisce che il risultato cada nell’intervallo `0x21..0x7E` (caratteri ASCII stampabili).
-    - Infine il valore `ch` viene scritto nel buffer di output (`*(u8 *)(out + idx) = ch`).
+> These instructions form the decoder: they take each byte from the blob, apply XOR, sign-extension, addition, modulo, and finally map it to a printable character, writing it to the output buffer (`*(u8 *)(out + idx) = ch`). Each line in semantic form:
+> - `r4 = *(u8 *)(...)` → take a single byte `b` from the input blob.    
+> - `r4 ^= 0x60` → `x = b ^ 0x60`.    
+> - `r4 <<= 0x38; r4 s>>= 0x38` → left shift 56, arithmetic right shift 56 = **sign-extend** 8→64 bits. Equivalent to: `sx = x - 0x100 if x & 0x80 else x`.    
+> - `r4 += 0x0e` → `sx = sx + 14`.    
+> - `r4 <<= 0x20; r4 >>= 0x20` → truncate to 32 bits (implementation detail of BPF).    
+> - `r4 %= 0x5e` → `y = (sx + 0x0E) mod 94`.    
+> - `r4 += 0x21` → `ch = y + 33`, ensuring the result is within `0x21..0x7E` (printable ASCII).    
+> - The resulting `ch` is written to the output buffer.
 
-Lo script di decodifica quindi è:
+Decoder script:
 
 ```python
 from typing import List
 
-# bytes estratti dalla tua mappa .rodata (46 bytes)
+# bytes extracted from the .rodata map (46 bytes)
 data = [
 0x57,0x34,0x72,0x70,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 0x24,0x26,0x5f,0x2c,0x5f,0x3f,0x5f,0x50,0x58,0x21,0x00,0x50,0x11,0x41,0x15,0x50,
