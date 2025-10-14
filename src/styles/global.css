@@ -1,4 +1,14 @@
+/*
+ * global.css
+ * Site-wide design tokens, typography, structural layout, and shared UI elements.
+ * Loaded once by `BaseLayout.astro` to provide a consistent foundation across pages.
+ */
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+/* =============================================
+    Design tokens
+    ============================================= */
 
 :root {
     --bg-primary: #0d0415;
@@ -25,11 +35,19 @@
     --border-subtle: rgba(255, 255, 255, 0.1);
 }
 
+/* =============================================
+   Reset & base element defaults
+   ============================================= */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
+/* =============================================
+   Page layout scaffolding
+   ============================================= */
 
 body {
     font-family: 'Rajdhani', sans-serif;
@@ -39,6 +57,9 @@ body {
     overflow-x: hidden;
     position: relative;
 }
+/* =============================================
+   Ambient background effects
+   ============================================= */
 
 body::before {
     content: '';
@@ -87,11 +108,19 @@ body::after {
     100% { transform: translateY(10px); }
 }
 
+/* =============================================
+   Layout utilities
+   ============================================= */
+
 .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 2rem;
 }
+
+/* =============================================
+   Global header & navigation
+   ============================================= */
 
 header {
     background: linear-gradient(135deg, rgba(13, 4, 21, 0.95), rgba(26, 11, 46, 0.95));
@@ -489,16 +518,12 @@ main {
     font-size: 0.85rem;
     border: 1px solid var(--accent-neon-purple);
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: none;
+    cursor: default;
     text-transform: lowercase;
 }
 
-.tag:hover {
-    background: var(--accent-neon-purple);
-    color: var(--bg-primary);
-    box-shadow: 0 0 15px var(--glow-purple);
-    transform: translateY(-2px);
-}
+/* Tags are static labels: no hover animation */
 
 .sidebar {
     display: flex;

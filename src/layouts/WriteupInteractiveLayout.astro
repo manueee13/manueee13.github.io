@@ -1,0 +1,10 @@
+---
+import ImageLightboxLayout from "./ImageLightboxLayout.astro";
+const props = Astro.props;
+---
+
+<!-- Deprecated alias: prefer `ImageLightboxLayout.astro` -->
+<ImageLightboxLayout {...props}>
+    <slot />
+</ImageLightboxLayout>
+            <img class="writeup-lightbox__image" alt="" draggable="false" />

@@ -1,0 +1,193 @@
+---
+import "../styles/writeup.css";
+---
+
+<div class="image-lightbox">
+    <slot />
+
+    <div id="writeup-lightbox" class="writeup-lightbox" hidden>
+        <div class="writeup-lightbox__backdrop" data-lightbox-close></div>
+        <figure class="writeup-lightbox__frame">
+            <img class="writeup-lightbox__image" alt="" draggable="false" />
+            <figcaption class="writeup-lightbox__caption"></figcaption>
+        </figure>
+    </div>
+</div>
+
+<script is:inline>
+(() => {
+    const overlay = document.getElementById('writeup-lightbox');
+    if (!overlay || overlay.dataset.initialized === 'true') {
+        return;
+    }
+
+    overlay.dataset.initialized = 'true';
+
+    const container = overlay.closest('.image-lightbox');
+    const article = container?.querySelector('.writeup-content') ?? document.querySelector('.writeup-content');
+
+    if (!(article instanceof HTMLElement)) {
+        return;
+    }
+
+    const overlayImg = overlay.querySelector('.writeup-lightbox__image');
+    const caption = overlay.querySelector('.writeup-lightbox__caption');
+
+    if (!(overlayImg instanceof HTMLImageElement) || !(caption instanceof HTMLElement)) {
+        return;
+    }
+
+    let scale = 1;
+    let closeTimeout = 0;
+    let previousBodyOverflow = '';
+    let isPanning = false;
+    let panStartX = 0;
+    let panStartY = 0;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    const updateTransform = () => {
+        overlayImg.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    };
+
+    const resetTransform = () => {
+        scale = 1;
+        offsetX = 0;
+        offsetY = 0;
+        overlayImg.style.transformOrigin = '50% 50%';
+        updateTransform();
+    };
+
+    const openFromImage = (img) => {
+        window.clearTimeout(closeTimeout);
+        resetTransform();
+
+        overlayImg.src = img.currentSrc || img.src;
+        overlayImg.alt = img.alt || '';
+        caption.textContent = img.alt || '';
+
+        previousBodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        overlay.hidden = false;
+        requestAnimationFrame(() => {
+            overlay.classList.add('is-active');
+        });
+    };
+
+    const finalizeClose = () => {
+        overlay.hidden = true;
+        overlayImg.src = '';
+        overlayImg.alt = '';
+        caption.textContent = '';
+        resetTransform();
+        document.body.style.overflow = previousBodyOverflow;
+    };
+
+    const close = () => {
+        if (!overlay.classList.contains('is-active')) {
+            return;
+        }
+
+        overlay.classList.remove('is-active');
+        closeTimeout = window.setTimeout(finalizeClose, 250);
+    };
+
+    article.addEventListener('click', (event) => {
+        const target = event.target;
+        if (event.button !== 0 || !(target instanceof HTMLImageElement)) {
+            return;
+        }
+
+        event.preventDefault();
+        openFromImage(target);
+    });
+
+    overlay.addEventListener('click', (event) => {
+        if (event.target === overlay || (event.target instanceof HTMLElement && event.target.dataset.lightboxClose !== undefined)) {
+            close();
+        }
+    });
+
+    overlay.addEventListener('contextmenu', (event) => {
+        if (!overlay.classList.contains('is-active')) {
+            return;
+        }
+
+        event.preventDefault();
+        close();
+    });
+
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            close();
+        }
+    });
+
+    overlay.addEventListener('wheel', (event) => {
+        if (!overlay.classList.contains('is-active')) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const delta = -event.deltaY;
+        const zoomFactor = delta > 0 ? 1.1 : 0.9;
+        const nextScale = Math.min(Math.max(scale * zoomFactor, 0.5), 6);
+
+        const rect = overlayImg.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) {
+            return;
+        }
+
+        const originX = ((event.clientX - rect.left) / rect.width) * 100;
+        const originY = ((event.clientY - rect.top) / rect.height) * 100;
+
+        overlayImg.style.transformOrigin = `${originX}% ${originY}%`;
+        scale = nextScale;
+        updateTransform();
+    }, { passive: false });
+
+    const startPan = (event) => {
+        if (!overlay.classList.contains('is-active') || scale <= 1) {
+            return;
+        }
+
+        isPanning = true;
+        panStartX = event.clientX - offsetX;
+        panStartY = event.clientY - offsetY;
+        overlayImg.style.cursor = 'grabbing';
+    };
+
+    const movePan = (event) => {
+        if (!isPanning) {
+            return;
+        }
+
+        offsetX = event.clientX - panStartX;
+        offsetY = event.clientY - panStartY;
+        updateTransform();
+    };
+
+    const endPan = () => {
+        if (!isPanning) {
+            return;
+        }
+
+        isPanning = false;
+        overlayImg.style.cursor = 'crosshair';
+    };
+
+    overlayImg.addEventListener('mousedown', (event) => {
+        if (event.button !== 0) {
+            return;
+        }
+
+        event.preventDefault();
+        startPan(event);
+    });
+
+    window.addEventListener('mousemove', movePan);
+    window.addEventListener('mouseup', endPan);
+})();
+</script>

@@ -1,6 +1,7 @@
 ---
-import "../styles/writeup-content.css";
-import "../styles/ctf-writeup.css";
+import "../styles/writeup.css";
+import WriteupBody from "./WriteupBody.astro";
+import ImageLightboxLayout from "./ImageLightboxLayout.astro";
 
 const { frontmatter } = Astro.props;
 import BaseLayout from "./BaseLayout.astro";
@@ -53,96 +54,96 @@ const formatDate = (dateInput: Date | string) => {
 <BaseLayout title={`${frontmatter.title} - CTF Writeup`}>
     <Header />
     <div style="height: 80px;"></div>
-    
-    <main>
-        <div class="container">
-            <!-- Hero section of writeup -->
-            <section class="writeup-hero">
-                <div class="breadcrumb">
-                    <a href="/">home</a>
-                    <span>→</span>
-                    <a href="/writeups">writeups</a>
-                    <span>→</span>
-                    <a href="/writeups#ctf">ctf</a>
-                    {competitionName && (
-                        <>
-                            <span>→</span>
-                            <a href="/writeups#ctf">{competitionName}</a>
-                        </>
-                    )}
-                    <span>→</span>
-                    <span class="current">{frontmatter.title}</span>
-                </div>
 
-                <div class="writeup-header">
-                    <div class="writeup-details">
-                        <h1 class="writeup-title">{frontmatter.title}</h1>
+    <ImageLightboxLayout>
+        <main class="writeup-layout writeup-layout--ctf">
+        <!-- Hero section of writeup -->
+        <section class="writeup-hero">
+            <div class="breadcrumb">
+                <a href="/">home</a>
+                <span>→</span>
+                <a href="/writeups">writeups</a>
+                <span>→</span>
+                <a href="/writeups#ctf">ctf</a>
+                {competitionName && (
+                    <>
+                        <span>→</span>
+                        <a href="/writeups#ctf">{competitionName}</a>
+                    </>
+                )}
+                <span>→</span>
+                <span class="current">{frontmatter.title}</span>
+            </div>
 
-                        <div class="writeup-meta">
-                            {frontmatter.competition && (
-                                <span class="meta-item">
-                                    <span class="meta-label">competition:</span>
-                                    <span class="meta-value">{frontmatter.competition}</span>
-                                </span>
-                            )}
-                            {frontmatter.organizer && (
-                                <span class="meta-item">
-                                    <span class="meta-label">organizer:</span>
-                                    <span class="meta-value">{frontmatter.organizer}</span>
-                                </span>
-                            )}
+            <div class="writeup-header">
+                <div class="writeup-info">
+                    <h1 class="writeup-title">{frontmatter.title}</h1>
+
+                    <div class="writeup-meta">
+                        {frontmatter.competition && (
                             <span class="meta-item">
-                                <span class="meta-label">category:</span>
-                                <span class="meta-value">{frontmatter.category}</span>
+                                <span class="meta-label">competition:</span>
+                                <span class="meta-value">{frontmatter.competition}</span>
                             </span>
-                            {frontmatter.difficulty && (
-                                <span class="meta-item">
-                                    <span class="meta-label">difficulty:</span>
-                                    <span class={`meta-value difficulty-${frontmatter.difficulty.toLowerCase()}`}>
-                                        {frontmatter.difficulty}
-                                    </span>
-                                </span>
-                            )}
+                        )}
+                        {frontmatter.organizer && (
                             <span class="meta-item">
-                                <span class="meta-label">date:</span>
-                                <span class="meta-value">{formatDate(frontmatter.date)}</span>
+                                <span class="meta-label">organizer:</span>
+                                <span class="meta-value">{frontmatter.organizer}</span>
                             </span>
-                        </div>
-
-                        {frontmatter.description && (
-                            <p class="writeup-description">{frontmatter.description}</p>
                         )}
-
-                        {frontmatter.tags && frontmatter.tags.length > 0 && (
-                            <div class="writeup-tags">
-                                {frontmatter.tags.map((tag: string) => (
-                                    <span class="tag">{tag}</span>
-                                ))}
-                            </div>
+                        <span class="meta-item">
+                            <span class="meta-label">category:</span>
+                            <span class="meta-value">{frontmatter.category}</span>
+                        </span>
+                        {frontmatter.difficulty && (
+                            <span class="meta-item">
+                                <span class="meta-label">difficulty:</span>
+                                <span class={`meta-value difficulty-${frontmatter.difficulty.toLowerCase()}`}>
+                                    {frontmatter.difficulty}
+                                </span>
+                            </span>
                         )}
+                        <span class="meta-item">
+                            <span class="meta-label">date:</span>
+                            <span class="meta-value">{formatDate(frontmatter.date)}</span>
+                        </span>
                     </div>
 
-                    {frontmatter.image && (
-                        <div class="writeup-image">
-                            <img src={imagePath} alt={`${frontmatter.title} icon`} />
+                    {frontmatter.description && (
+                        <p class="writeup-description">{frontmatter.description}</p>
+                    )}
+
+                    {frontmatter.tags && frontmatter.tags.length > 0 && (
+                        <div class="writeup-tags">
+                            {frontmatter.tags.map((tag: string) => (
+                                <span class="tag">{tag}</span>
+                            ))}
                         </div>
                     )}
                 </div>
-            </section>
-            
-            <!-- Content of markdown -->
-            <article class="writeup-content">
-                <slot />
-            </article>
-            
-            <!-- Navigation writeups -->
-            <nav class="writeup-navigation">
-                <a href="/writeups#ctf" class="nav-button back">
-                    ← back to ctf writeups
-                </a>
-            </nav>
-        </div>
-    </main>
+
+                {frontmatter.image && (
+                    <div class="writeup-image">
+                        <img src={imagePath} alt={`${frontmatter.title} icon`} />
+                    </div>
+                )}
+            </div>
+        </section>
+
+        <!-- Content of markdown -->
+        <WriteupBody>
+            <slot />
+        </WriteupBody>
+
+        <!-- Navigation writeups -->
+        <nav class="writeup-navigation">
+            <a href="/writeups#ctf" class="nav-button back">
+                ← back to ctf writeups
+            </a>
+        </nav>
+        </main>
+    </ImageLightboxLayout>
     
     <Footer />
 </BaseLayout>

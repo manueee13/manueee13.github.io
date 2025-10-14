@@ -1,0 +1,9 @@
+---
+import "../styles/writeup.css";
+
+const { className = '' } = Astro.props;
+---
+
+<article class={`writeup-content${className ? ` ${className}` : ''}`}>
+    <slot />
+</article>
