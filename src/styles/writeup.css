@@ -562,11 +562,20 @@
 
 .writeup-content table {
 	width: 100%;
-	border-collapse: collapse;
+	max-width: 100%;
+	/* Use separate borders to allow radius and header rounding */
+	border-collapse: separate;
+	border-spacing: 0;
+	table-layout: fixed; /* fill the box and distribute columns */
 	margin: 2rem 0;
 	background: var(--bg-secondary);
-	border-radius: 10px;
-	overflow: hidden;
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	/* Enable horizontal scroll only if content overflows */
+	display: block;
+	overflow-x: auto;
+	overflow-y: hidden;
+	-webkit-overflow-scrolling: touch;
 }
 
 .writeup-content th,
@@ -574,16 +583,62 @@
 	padding: 1rem;
 	text-align: left;
 	border-bottom: 1px solid var(--border-subtle);
+	vertical-align: top;
+	/* Wrap long content gracefully */
+	word-break: break-word;
 }
 
-.writeup-content th {
+.writeup-content thead th {
+	background: var(--gradient-primary);
+	color: white;
+	font-weight: 600;
+	position: sticky;
+	top: 0;
+	z-index: 2; /* stay above body rows during scroll */
+	border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Fallback: some MD renderers may not output <thead> */
+.writeup-content table tr:first-child th {
 	background: var(--gradient-primary);
 	color: white;
 	font-weight: 600;
 }
 
-.writeup-content tr:hover {
-	background: rgba(255, 0, 110, 0.05);
+/* Zebra striping for better readability */
+.writeup-content tbody tr:nth-child(odd) {
+	background: rgba(255, 255, 255, 0.03);
+}
+
+/* Corner rounding for outer cells */
+.writeup-content thead th:first-child { border-top-left-radius: 12px; }
+.writeup-content thead th:last-child { border-top-right-radius: 12px; }
+.writeup-content table tr:first-child th:first-child { border-top-left-radius: 12px; }
+.writeup-content table tr:first-child th:last-child { border-top-right-radius: 12px; }
+.writeup-content tbody tr:last-child td:first-child { border-bottom-left-radius: 12px; }
+.writeup-content tbody tr:last-child td:last-child { border-bottom-right-radius: 12px; }
+
+/* Improve readability for body cells */
+.writeup-content tbody td { color: var(--text-white); }
+
+/* Hover only on body rows, not on the header */
+.writeup-content tbody tr:hover {
+	background: rgba(255, 0, 110, 0.08);
+}
+
+/* Make code inside cells wrap instead of overflowing */
+.writeup-content td code,
+.writeup-content th code {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* Optional caption styling if used */
+.writeup-content table caption {
+	caption-side: bottom;
+	padding: 0.75rem 1rem;
+	color: var(--text-muted);
+	font-family: 'Share Tech Mono', monospace;
 }
 
 .writeup-content hr {

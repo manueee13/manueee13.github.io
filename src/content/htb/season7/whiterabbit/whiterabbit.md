@@ -1,7 +1,7 @@
 ---
 title: WhiteRabbit
 date: 2025-04-12
-category: season7
+category: Season 7
 difficulty: Insane
 machine: Linux
 image: "htb/season7/whiterabbit/img/icon.png"
@@ -998,6 +998,7 @@ Table: command_log
 | 4   | 2024-08-30 11:59:02 | `rm -rf .bash_history`                                                          |
 | 5   | 2024-08-30 11:59:47 | `#thatwasclose`                                                                 |
 | 6   | 2024-08-30 14:40:42 | `cd /home/neo/ && /opt/neo-password-generator/neo-password-generator \| passwd` |
+
 This is the command history. Among the information, we notice another subdomain that is a **restic** backup repository, and they've also left the password to access the repository. Another detail is that now we know the first user, `neo`, whose password was generated using `neo-password-generator`.
 
 Let's try downloading the backup from the repository using the command:
