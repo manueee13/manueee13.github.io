@@ -1,4 +1,6 @@
 ---
+import "../styles/writeup-content.css";
+
 const { frontmatter } = Astro.props;
 import BaseLayout from "./BaseLayout.astro";
 import Header from "../components/Header.astro";
@@ -51,7 +53,7 @@ const formatDate = (date: Date) => {
                 
                 <div class="writeup-header">
                     <div class="writeup-info">
-                        <h1 class="writeup-title">{frontmatter.title}</h1>
+                        <h2 class="writeup-title">{frontmatter.title}</h2>
                         <div class="writeup-meta">
                             {frontmatter.machine && (
                                 <span class="meta-item">
@@ -147,17 +149,28 @@ const formatDate = (date: Date) => {
         margin-bottom: 4rem;
     }
     
+    .writeup-hero-title {
+        font-size: clamp(2.8rem, 6vw, 4.2rem);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+        color: var(--text-primary);
+        text-shadow: 0 0 25px rgba(255, 105, 180, 0.25);
+    }
+
     .writeup-header {
         display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 3rem;
+        grid-template-columns: minmax(0, 2.3fr) minmax(180px, 1fr);
+        gap: 2.5rem;
         align-items: start;
         background: var(--bg-card);
         border: 2px solid var(--border-subtle);
         border-radius: 20px;
-        padding: 3rem;
+        padding: 2.5rem;
         position: relative;
         overflow: hidden;
+        max-width: 960px;
+        margin: 0 auto;
     }
     
     .writeup-header::before {
@@ -170,15 +183,19 @@ const formatDate = (date: Date) => {
         background: var(--gradient-primary);
     }
     
+    .writeup-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        max-width: 620px;
+    }
+
     .writeup-title {
-        font-size: 3rem;
+        font-size: clamp(1.9rem, 3.2vw, 2.4rem);
         font-weight: 700;
-        margin-bottom: 2rem;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        filter: drop-shadow(0 0 20px var(--glow-pink));
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        filter: drop-shadow(0 0 15px rgba(255, 105, 180, 0.2));
         line-height: 1.2;
     }
     
@@ -253,18 +270,18 @@ const formatDate = (date: Date) => {
         display: flex;
         justify-content: center;
         align-items: center;
-        min-width: 150px;
+        min-width: 180px;
     }
     
     .writeup-image img {
-        width: 120px;
-        height: 120px;
+        width: 170px;
+        height: 170px;
         object-fit: contain;
         border-radius: 20px;
         border: 2px solid var(--accent-pink);
-        padding: 1rem;
-        background: rgba(255, 105, 180, 0.1);
-        box-shadow: 0 0 30px var(--glow-pink);
+        padding: 1.2rem;
+        background: rgba(255, 105, 180, 0.12);
+        box-shadow: 0 0 35px var(--glow-pink);
     }
     
     /* Contenuto del writeup */
@@ -435,14 +452,27 @@ const formatDate = (date: Date) => {
             grid-template-columns: 1fr;
             text-align: center;
             padding: 2rem;
+            max-width: 100%;
+        }
+
+        .writeup-hero-title {
+            font-size: clamp(2.2rem, 8vw, 3rem);
         }
         
+        .writeup-info {
+            align-items: center;
+        }
+
         .writeup-title {
-            font-size: 2rem;
+            font-size: clamp(1.6rem, 6vw, 2.1rem);
         }
         
         .writeup-meta {
             grid-template-columns: 1fr;
+        }
+
+        .writeup-image {
+            margin-top: 1.5rem;
         }
         
         .writeup-content {

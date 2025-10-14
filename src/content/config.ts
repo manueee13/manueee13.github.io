@@ -18,11 +18,12 @@ const ctfWriteups = defineCollection({
         title: z.string(),
         date: z.date(),
         category: z.string(), // web, rev, pwn, crypto, forensics, misc, etc.
-        organizer: z.string().optional(), // picoCTF, DEFCON, HTB CTF, etc.
+        organizer: z.string().optional(), // Team or organization behind the CTF
+        competition: z.string().optional(), // DEF CON, picoCTF, SunshineCTF, etc.
         difficulty: z.string().optional(),
         tags: z.array(z.string()),
         description: z.string().optional(),
-        image: z.string().optional()
+        image: z.string().optional(),
     })
 });
 

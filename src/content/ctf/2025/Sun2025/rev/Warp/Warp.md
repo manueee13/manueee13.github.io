@@ -1,8 +1,10 @@
 ---
 title: Warp
+competition: SunshineCTF 2025
 date: 2025-09-28
 category: rev
-organizer: SunshineCTF.org
+organizer: SunshineCTF
+image: "https://ctftime.org/media/cache/ee/91/ee913b31fcf899b3d4d5036062bb500a.png"
 difficulty: medium
 tags:
   - ctf

@@ -44,10 +44,10 @@ import Footer from "../components/Footer.astro";
                 <div class="about-section">
                     <h2>Skills & Specializations</h2>
                     <div class="skills-grid">
-                        <div class="skill-tag">Web Security</div>
-                        <div class="skill-tag">Binary Exploitation</div>
                         <div class="skill-tag">Reverse Engineering</div>
                         <div class="skill-tag">OSINT</div>
+                        <div class="skill-tag">Web Security</div>
+                        <div class="skill-tag">Binary Exploitation</div>
                     </div>
                 </div>
             </div>
@@ -57,6 +57,60 @@ import Footer from "../components/Footer.astro";
 </BaseLayout>
 
 <style>
+    .about-content {
+        display: grid;
+        gap: 2.5rem;
+    }
+
+    .about-section {
+        position: relative;
+        padding: 2.5rem;
+        border-radius: 24px;
+        border: 1px solid var(--border-subtle);
+        background: linear-gradient(135deg, rgba(22, 33, 62, 0.75), rgba(26, 11, 46, 0.55));
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 255, 247, 0.08);
+        overflow: hidden;
+        transition: border-color 0.3s ease;
+    }
+
+    .about-section::before {
+        content: '';
+        position: absolute;
+        inset: -40% 35% 60% -35%;
+        background: radial-gradient(circle at top, rgba(0, 255, 247, 0.18), transparent 65%);
+        opacity: 0.35;
+        filter: blur(45px);
+        pointer-events: none;
+    }
+
+    .about-section h2 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        color: var(--accent-neon-cyan);
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .about-section h2::after {
+        content: '';
+        height: 2px;
+        width: 60px;
+        background: var(--gradient-primary);
+        border-radius: 999px;
+        box-shadow: 0 0 15px var(--glow-pink);
+    }
+
+    .about-section p {
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        line-height: 1.9;
+    }
+
     .team-link {
         margin: 2rem 0;
         text-align: center;
@@ -78,6 +132,50 @@ import Footer from "../components/Footer.astro";
     .team-button:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 30px var(--glow-pink);
+    }
+
+    .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.2rem;
+        margin-top: 1.6rem;
+    }
+
+    .skill-tag {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 1.2rem;
+        border-radius: 18px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: 'Orbitron', sans-serif;
+        color: var(--bg-primary);
+        background: var(--gradient-primary);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45), 0 0 18px rgba(0, 255, 247, 0.25);
+        overflow: hidden;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .skill-tag::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent 60%);
+        opacity: 0.28;
+        mix-blend-mode: screen;
+        transition: opacity 0.4s ease;
+    }
+
+    .skill-tag:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 42, 109, 0.35);
+    }
+
+    .skill-tag:hover::after {
+        opacity: 0.45;
     }
 
     .tools-grid {
@@ -180,6 +278,14 @@ import Footer from "../components/Footer.astro";
 
     /* Responsive */
     @media (max-width: 768px) {
+        .about-content {
+            gap: 1.8rem;
+        }
+
+        .about-section {
+            padding: 2rem;
+        }
+
         .tools-grid {
             grid-template-columns: 1fr;
         }

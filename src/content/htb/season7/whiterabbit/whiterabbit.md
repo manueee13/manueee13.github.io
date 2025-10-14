@@ -4,6 +4,7 @@ date: 2025-04-12
 category: season7
 difficulty: Insane
 machine: Linux
+image: "htb/season7/whiterabbit/img/icon.png"
 tags: ["htb", "season7", "web", "rev", "linux", "insane"]
 ---
 

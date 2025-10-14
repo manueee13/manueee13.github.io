@@ -18,6 +18,11 @@
     --glow-pink: rgba(255, 42, 109, 0.6);
     --glow-purple: rgba(179, 136, 255, 0.5);
     --shadow-neon: 0 0 20px var(--glow-cyan), 0 0 40px var(--glow-cyan);
+    --gradient-primary: linear-gradient(135deg, var(--accent-neon-cyan), var(--accent-neon-pink), var(--accent-neon-purple));
+    --accent-cyan: var(--accent-neon-cyan);
+    --accent-pink: var(--accent-neon-pink);
+    --accent-purple: var(--accent-neon-purple);
+    --border-subtle: rgba(255, 255, 255, 0.1);
 }
 
 * {

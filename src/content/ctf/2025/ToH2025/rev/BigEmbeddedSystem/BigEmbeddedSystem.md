@@ -1,9 +1,10 @@
 ---
 title: Big Embedded System
+competition: ToH CTF 2025
 date: 2025-07-20
 category: rev
-organizer: TowerOfHanoi
-ctfTimeId: "3ad6f666928d29dd683705855e096ecf"
+organizer: Tower Of Hanoi
+image: "https://ctftime.org/media/cache/3a/d6/3ad6f666928d29dd683705855e096ecf.png"
 difficulty: easy
 tags:
   - ctf

@@ -70,7 +70,10 @@ const isHTBPost = (post: any) => post.collection === 'htb';
                                     {isHTBPost(post) && (post.data as any).machine && (
                                         <span class="machine-badge">{(post.data as any).machine}</span>
                                     )}
-                                    {!isHTBPost(post) && (post.data as any).organizer && (
+                                    {!isHTBPost(post) && ((post.data as any).competition || (post.data as any).organizer) && (
+                                        <span class="competition-badge">{(post.data as any).competition || (post.data as any).organizer}</span>
+                                    )}
+                                    {!isHTBPost(post) && (post.data as any).competition && (post.data as any).organizer && (post.data as any).competition !== (post.data as any).organizer && (
                                         <span class="organizer-badge">{(post.data as any).organizer}</span>
                                     )}
                                 </div>
@@ -95,27 +98,7 @@ const isHTBPost = (post: any) => post.collection === 'htb';
                         <h3>categories</h3>
                         <ul>
                             <li><a href="/writeups#ctf">CTF <span class="count">{ctfPosts.length}</span></a></li>
-                            <li><a href="/writeups#htb">HackTheBox <span class="count">{htbPosts.length}</span></a></li>
-                        </ul>
-                    </div>
-
-                    <div class="widget">
-                        <h3>quick links</h3>
-                        <ul>
-                            <li><a href="/writeups">all writeups</a></li>
-                            <li><a href="/about">about me</a></li>
-                            <li><a href="https://mntcrl.it" target="_blank">my team</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="widget">
-                        <h3>favorite tools</h3>
-                        <ul>
-                            <li><a href="#">ghidra</a></li>
-                            <li><a href="#">burp suite</a></li>
-                            <li><a href="#">volatility</a></li>
-                            <li><a href="#">radare2</a></li>
-                            <li><a href="#">wireshark</a></li>
+                            <li><a href="/writeups#htb">Hack The Box <span class="count">{htbPosts.length}</span></a></li>
                         </ul>
                     </div>
                 </aside>
@@ -181,7 +164,9 @@ const isHTBPost = (post: any) => post.collection === 'htb';
     }
 
     .machine-badge,
-    .category-badge {
+    .category-badge,
+    .competition-badge,
+    .organizer-badge {
         background: rgba(218, 112, 214, 0.15);
         color: var(--accent-purple);
         padding: 0.3rem 0.8rem;
@@ -243,7 +228,9 @@ const isHTBPost = (post: any) => post.collection === 'htb';
         
         .difficulty-badge,
         .machine-badge,
-        .category-badge {
+        .category-badge,
+        .competition-badge,
+        .organizer-badge {
             font-size: 0.7rem;
             padding: 0.2rem 0.6rem;
         }
