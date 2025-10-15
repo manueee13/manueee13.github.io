@@ -1,6 +1,6 @@
 # manueee13.github.io
 
-My cozy little space on the web 💻🌸 — a mix of **cybersecurity**, **CTF adventures**, and unapologetic ✨femboy energy✨.
+My cozy little space on the web 💻🌸 — a mix of **cybersecurity**, **CTF adventures**.
 
 ## 💫 Overview
 
